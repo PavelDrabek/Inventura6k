@@ -2,7 +2,9 @@ package cz.pazzi.inventura6k;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Debug;
 import android.os.Environment;
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -15,9 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by pavel on 08.08.16.
@@ -29,101 +33,70 @@ public class ImageUploader {
 
     String boundary = "*****";
 
-    public static void Upload(final String fileName, final String absolutePath) {
+    public static void UploadFileAsync(final String fileName, final String absolutePath) {
         new Thread(new Runnable() {
             public void run() {
 
-                ImageUploader u = new ImageUploader();
-                u.UploadFile(serverUrl, fileName, absolutePath);
+//                ImageUploader u = new ImageUploader();
+//                UploadFile(serverUrl, fileName, absolutePath);
+                try {
 
+                    MultipartUtility multipart = new MultipartUtility(serverUrl, "UTF-8");
+
+                    //add your file here.
+                    /*This is to add file content*/
+    //                for (int i = 0; i < myFileArray.size(); i++) {
+                    multipart.addFilePart("photo.png", new File(absolutePath));
+
+    //                }
+
+                    List<String> response = multipart.finish();
+                    String responseString = "";
+                    Log.d("fileUpload", "SERVER REPLIED:");
+                    for (String line : response) {
+                        Log.d("fileUpload", "Upload Files Response:::" + line);
+                        // get your server response here.
+                        responseString = line;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }).start();
     }
 
-
-    public boolean UploadFile(String serverUrl, String fileName, String absolutePath) {
-
-        HttpURLConnection conn;
-        DataOutputStream dos = null;
-        int bytesRead, bytesAvailable, bufferSize;
-        byte[] buffer;
-        int maxBufferSize = 1 * 1024 * 1024;
-
-
+    public static void UploadFile(String serverUrl, String fileName, String filePath) {
+        HttpURLConnection connection = null;
+        String error = "";
         try {
-
-
-
-            // open a URL connection to the Servlet
-            InputStream fileInputStream = ShrinkImage(absolutePath); // new FileInputStream(new File(absolutePath));
             URL url = new URL(serverUrl);
+            connection = (HttpURLConnection) url.openConnection();
 
-            // Open a HTTP  connection to  the URL
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setDoInput(true); // Allow Inputs
-            conn.setDoOutput(true); // Allow Outputs
-            conn.setUseCaches(false); // Don't use a Cached Copy
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Connection", "Keep-Alive");
-            //  conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-            conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
-            conn.setRequestProperty("uploaded_file", fileName);
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
 
-            conn.setRequestProperty("fileName", fileName);
+            String params = "image_name=" + "photo.png" + "&image_encoded=" + ShrinkAndEncodeImage(filePath);
 
-            dos = new DataOutputStream(conn.getOutputStream());
+            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+            writer.write(params);
+            writer.close();
 
-            //    dos.writeBytes(twoHyphens + boundary + lineEnd);
-            //    dos.writeBytes("Content-Disposition: form-data;
-            //    number=\"userNumber\";
-            //    usernumber=\""+ usernumber + "\"" + lineEnd);
-            //    Log.d("number",usernumber);
-            //   dos.writeBytes(lineEnd);
+            int responseCode = connection.getResponseCode();
+            Log.d("upload", GetResponse(connection.getInputStream()));
+            Log.d("upload", "ResponseCode = " + responseCode);
 
-            // create a buffer of  maximum size
-            bytesAvailable = fileInputStream.available();
-
-            bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            buffer = new byte[bufferSize];
-
-            // read file and write it into form...
-            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
-            while (bytesRead > 0) {
-
-                dos.write(buffer, 0, bufferSize);
-                bytesAvailable = fileInputStream.available();
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
+            if(responseCode == 200) { //If the code contained in this response equals 200, then the upload is successful (and ready to be processed by the php code)
+                Log.d("upload", "Upload successful !");
             }
-
-            // Responses from the server (code and message)
-            int serverResponseCode = conn.getResponseCode();
-            String serverResponseMessage = conn.getResponseMessage();
-
-            Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
-
-            if(serverResponseCode == 200){
-                String jsonReply = GetResponse(conn.getInputStream());
-                Log.d("reply", jsonReply);
-            }
-
-            //close the streams //
-            fileInputStream.close();
-            dos.flush();
-            dos.close();
-
-            return true;
-
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-            Log.e("Upload file to server", "error: " + ex.getMessage(), ex);
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("Upload file to server", "Exception : "  + e.getMessage(), e);
+            error = e.toString();
+            Log.e("upload", "error in catch: " + error);
         }
-        return false;
+
+        if(connection != null) {
+            connection.disconnect();
+            Log.d("upload", "Connection disconected");
+        }
     }
 
     protected final static String GetResponse(InputStream is) throws IOException {
@@ -136,26 +109,21 @@ public class ImageUploader {
         return response.toString();
     }
 
-    private static InputStream ShrinkImage(String absolutePath) {
+    private static Bitmap ShrinkImage(String absolutePath) {
         Bitmap b = BitmapFactory.decodeFile(absolutePath);
-        Bitmap out = Bitmap.createScaledBitmap(b, 320, 480, false);
+        return Bitmap.createScaledBitmap(b, b.getWidth()/10, b.getHeight()/10, true);
+    }
+
+    private static String ShrinkAndEncodeImage(String absolutePath) {
+        Bitmap b = ShrinkImage(absolutePath);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        out.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        b.compress(Bitmap.CompressFormat.PNG, 80, outputStream);
+
         byte[] bitmapdata = outputStream.toByteArray();
-        InputStream is = new ByteArrayInputStream(bitmapdata);
-        return is;
+        Log.d("odkodovano", bitmapdata.toString());
+        b.recycle();
+        return Base64.encodeToString(bitmapdata, 0);
     }
 
-    public static long copyLarge(InputStream input, OutputStream output) throws IOException
-    {
-        byte[] buffer = new byte[4096];
-        long count = 0L;
-        int n = 0;
-        while (-1 != (n = input.read(buffer))) {
-            output.write(buffer, 0, n);
-            count += n;
-        }
-        return count;
-    }
 }

@@ -104,8 +104,10 @@ public class InventoryActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_TAKE_PHOTO) {
             if (resultCode == RESULT_OK) {
-//                Bitmap bmp = BitmapFactory.decodeFile( file.getAbsolutePath() );
-//                imgPhoto.setImageBitmap(bmp);
+                Toast.makeText(this, "result ok", Toast.LENGTH_SHORT).show();
+
+                Bitmap b = BitmapFactory.decodeFile( file.getAbsolutePath() );
+                imgPhoto.setImageBitmap( Bitmap.createScaledBitmap(b, b.getWidth()/10, b.getHeight()/10, true));
 
 
             } else {
@@ -121,7 +123,7 @@ public class InventoryActivity extends AppCompatActivity {
 
     private void Send() {
         if(file != null) {
-            ImageUploader.Upload("test.png", file.getAbsolutePath());
+            ImageUploader.UploadFileAsync("test.png", file.getAbsolutePath());
         } else {
             Toast.makeText(this, "file is null", Toast.LENGTH_SHORT).show();
         }
