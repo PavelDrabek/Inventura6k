@@ -13,32 +13,30 @@
         android:layout_height="wrap_content"
         android:id="@+id/tName"
         android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabSend"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:src="@android:drawable/ic_media_play"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="@dimen/fab_margin" />
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/imgPhoto"
+        android:editable="true"
+        android:singleLine="true" />
 
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tRegNumber"
         android:layout_below="@+id/textView2"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/imgPhoto"
+        android:editable="true"
+        android:singleLine="true" />
 
     <ImageView
-        android:layout_width="fill_parent"
+        android:layout_width="200dp"
         android:layout_height="200dp"
         android:id="@+id/imgPhoto"
-        android:layout_below="@+id/textView3"
-        android:layout_alignParentStart="true" />
+        android:src="@android:drawable/ic_menu_camera"
+        android:layout_alignTop="@+id/textView2"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="5dp"
+        android:layout_alignBottom="@+id/tPlace" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -62,9 +60,85 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Fotka"
+        android:text="Cena"
         android:id="@+id/textView3"
         android:layout_below="@+id/tRegNumber"
         android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tPrice"
+        android:layout_below="@+id/textView3"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/imgPhoto"
+        android:editable="true"
+        android:singleLine="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Datum nakupu"
+        android:id="@+id/textView4"
+        android:layout_below="@+id/tPrice"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tDate"
+        android:layout_below="@+id/textView4"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/imgPhoto"
+        android:enabled="false"
+        android:singleLine="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Popis"
+        android:id="@+id/textView5"
+        android:layout_below="@+id/tPlace"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tDesc"
+        android:enabled="false"
+        android:layout_below="@+id/textView5"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/btnSend" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pridat"
+        android:id="@+id/btnSend"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Umisteni"
+        android:id="@+id/textView6"
+        android:layout_below="@+id/tDate"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tPlace"
+        android:enabled="false"
+        android:singleLine="true"
+        android:layout_below="@+id/textView6"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/imgPhoto" />
 
 </RelativeLayout>

@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,8 +29,9 @@ public class InventoryActivity extends AppCompatActivity {
 
     public static final int REQUEST_TAKE_PHOTO = 1;
 
-    EditText tName, tRegNumber;
+    EditText tName, tRegNumber, tPrice, tDate, tPlace, tDesc;
     ImageView imgPhoto;
+    Button btnSend;
 
     File file = null;
     String fileName = null;
@@ -41,14 +43,20 @@ public class InventoryActivity extends AppCompatActivity {
 
         tName = (EditText)findViewById(R.id.tName);
         tRegNumber = (EditText)findViewById(R.id.tRegNumber);
+        tPrice = (EditText)findViewById(R.id.tPrice);
+        tDate = (EditText)findViewById(R.id.tDate);
+        tPlace = (EditText)findViewById(R.id.tPlace);
+        tDesc = (EditText)findViewById(R.id.tDesc);
         imgPhoto = (ImageView)findViewById(R.id.imgPhoto);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabSend);
-        fab.setOnClickListener(new View.OnClickListener() {
+        btnSend = (Button)findViewById(R.id.btnSend);
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fabSend);
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
                 Send();
             }
         });
