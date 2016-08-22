@@ -24,6 +24,7 @@ public class ServerGateway extends AsyncTask<Void,Void,Void> {
     protected String sUrl;
     protected ServerListener listener;
     protected JsonElement result = null;
+    protected String response = null;
     protected String error = "";
 
     public ServerGateway(String url, ServerListener listener) {
@@ -42,9 +43,9 @@ public class ServerGateway extends AsyncTask<Void,Void,Void> {
 
             if(responseCode >= 200 && responseCode <= 299) {
                 JsonParser jp = new JsonParser(); //from gson
-                String response = GetResponse(connection.getInputStream());
-                Log.d(getClass().getSimpleName(), response);
-                result = jp.parse(response);
+                response = GetResponse(connection.getInputStream());
+                //Log.d(getClass().getSimpleName(), response);
+                //result = jp.parse(response);
             } else {
                 Log.e(this.getClass().toString(), "responseCode = " + responseCode);
                 error = GetResponse(connection.getErrorStream());
@@ -65,7 +66,7 @@ public class ServerGateway extends AsyncTask<Void,Void,Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         if(error.isEmpty()) {
-            listener.OnServerOK(result);
+            listener.OnServerResult(response);
         } else {
             listener.OnServerError(error);
         }

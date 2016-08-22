@@ -20,10 +20,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import cz.pazzi.inventura6k.comunication.ServerListener;
+import cz.pazzi.inventura6k.data.Settings;
 
 public class InventoryActivity extends AppCompatActivity {
 
@@ -67,6 +72,24 @@ public class InventoryActivity extends AppCompatActivity {
                 GetFile();
             }
         });
+
+        ServerGateway cmd = new ServerGateway(Settings.urlItems, new ServerListener() {
+            @Override
+            public void OnServerResult(String result) {
+                tRegNumber.setText(result);
+            }
+
+            @Override
+            public void OnServerOK(JsonElement json) {
+
+            }
+
+            @Override
+            public void OnServerError(String error) {
+                Toast.makeText(InventoryActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        cmd.execute();
     }
 
     @Override
