@@ -15,7 +15,6 @@
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/imgPhoto"
-        android:editable="true"
         android:singleLine="true" />
 
     <EditText
@@ -25,7 +24,6 @@
         android:layout_below="@+id/textView2"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/imgPhoto"
-        android:editable="true"
         android:singleLine="true" />
 
     <ImageView
