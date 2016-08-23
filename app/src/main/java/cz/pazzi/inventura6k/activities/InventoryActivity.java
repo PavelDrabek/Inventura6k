@@ -1,4 +1,4 @@
-package cz.pazzi.inventura6k;
+package cz.pazzi.inventura6k.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -6,12 +6,8 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,10 +19,10 @@ import android.widget.Toast;
 import com.google.gson.JsonElement;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
+import cz.pazzi.inventura6k.ImageUploader;
+import cz.pazzi.inventura6k.R;
+import cz.pazzi.inventura6k.ServerGateway;
 import cz.pazzi.inventura6k.comunication.ServerListener;
 import cz.pazzi.inventura6k.data.Settings;
 
