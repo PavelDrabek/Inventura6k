@@ -2,6 +2,7 @@ package cz.pazzi.inventura6k.comunication;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import cz.pazzi.inventura6k.R;
 import cz.pazzi.inventura6k.data.Item;
+import cz.pazzi.inventura6k.data.Settings;
 
 /**
  * Created by Pavel on 23.08.2016.
@@ -57,7 +59,10 @@ public class ItemsAdapter extends BaseAdapter {
         tRegNumber.setText("6/" + item.regNumber);
         tPlace.setText(item.place);
 
-//        new PhotoDownloader(mContext, item.GetPhotoUrl(), img).execute();
+        if(item.imgUrl != null && !item.imgUrl.isEmpty()) {
+            Log.d("aa", "downloading img: " + Settings.urlServer + item.imgUrl);
+            new PhotoDownloader(mContext, Settings.urlServer + item.imgUrl, img).execute();
+        }
 
         return itemView;
     }

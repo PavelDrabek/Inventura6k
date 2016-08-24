@@ -69,7 +69,7 @@ public class InventoryActivity extends AppCompatActivity {
             }
         });
 
-        ServerGateway cmd = new ServerGateway(Settings.urlItems, new ServerListener() {
+        ServerGateway cmd = new ServerGateway(Settings.urlNextRegNumber, new ServerListener() {
             @Override
             public void OnServerResult(String result) {
                 tRegNumber.setText(result);

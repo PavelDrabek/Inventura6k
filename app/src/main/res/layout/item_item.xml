@@ -20,7 +20,7 @@
         android:textColor="#EF5400"
         android:layout_alignParentTop="true"
         android:layout_alignStart="@+id/tRegNumber"
-        android:textSize="30dp" />
+        android:textSize="25dp" />
 
     <TextView
         android:layout_width="wrap_content"

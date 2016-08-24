@@ -25,14 +25,22 @@ public class Item {
             id = json.get("id").getAsString();
             name = json.get("name").getAsString();
             regNumber = json.get("regNumber").getAsString();
-            price = json.get("price").getAsString();
-            place = json.get("place").getAsString();
-            buyDate = DateParser.ParseDate(json.get("buyDate").getAsString());
-            description = json.get("description").getAsString();
-
-            imgUrl = json.get("imgUrl").getAsString();
+            if(!json.get("price").isJsonNull()) {
+                price = json.get("price").getAsString();
+            }
+            if(!json.get("place").isJsonNull()) {
+                place = json.get("place").getAsString();
+            }
+            //buyDate = DateParser.ParseDate(json.get("buyDate").getAsString());
+            if(!json.get("description").isJsonNull()) {
+                description = json.get("description").getAsString();
+            }
+            if(!json.get("imgUrl").isJsonNull()) {
+                imgUrl = json.get("imgUrl").getAsString();
+            }
         } catch (Exception e) {
             Log.e(getClass().getSimpleName(), "error, json: " + json.toString());
+            Log.e(getClass().getSimpleName(), e.toString());
         }
     }
 }

@@ -67,6 +67,7 @@ public class ServerGateway extends AsyncTask<Void,Void,Void> {
     protected void onPostExecute(Void aVoid) {
         if(error.isEmpty()) {
             listener.OnServerResult(response);
+
         } else {
             listener.OnServerError(error);
         }
