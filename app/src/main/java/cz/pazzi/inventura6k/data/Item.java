@@ -43,4 +43,8 @@ public class Item {
             Log.e(getClass().getSimpleName(), e.toString());
         }
     }
+
+    public Item() {
+
+    }
 }

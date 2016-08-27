@@ -44,7 +44,10 @@ public class ServerGateway extends AsyncTask<Void,Void,Void> {
             if(responseCode >= 200 && responseCode <= 299) {
                 JsonParser jp = new JsonParser(); //from gson
                 response = GetResponse(connection.getInputStream());
-                //Log.d(getClass().getSimpleName(), response);
+                Log.d(getClass().getSimpleName(), "response: " + response);
+                if(connection.getErrorStream() != null) {
+                    Log.d(getClass().getSimpleName(), "error: " + GetResponse(connection.getErrorStream()));
+                }
                 //result = jp.parse(response);
             } else {
                 Log.e(this.getClass().toString(), "responseCode = " + responseCode);

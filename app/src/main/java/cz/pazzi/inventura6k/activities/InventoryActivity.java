@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,11 +20,16 @@ import android.widget.Toast;
 import com.google.gson.JsonElement;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.StringTokenizer;
 
 import cz.pazzi.inventura6k.ImageUploader;
 import cz.pazzi.inventura6k.R;
 import cz.pazzi.inventura6k.ServerGateway;
 import cz.pazzi.inventura6k.comunication.ServerListener;
+import cz.pazzi.inventura6k.data.DateParser;
+import cz.pazzi.inventura6k.data.Item;
 import cz.pazzi.inventura6k.data.Settings;
 
 public class InventoryActivity extends AppCompatActivity {
@@ -58,7 +64,11 @@ public class InventoryActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                Send();
+                try {
+                    Send();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -136,7 +146,6 @@ public class InventoryActivity extends AppCompatActivity {
                 Bitmap b = BitmapFactory.decodeFile( file.getAbsolutePath() );
                 imgPhoto.setImageBitmap( Bitmap.createScaledBitmap(b, b.getWidth()/10, b.getHeight()/10, true));
 
-
             } else {
                 Toast.makeText(this, "result not ok", Toast.LENGTH_SHORT).show();
             }
@@ -148,11 +157,51 @@ public class InventoryActivity extends AppCompatActivity {
 //        imgPhoto.setImageBitmap(bmp);
     }
 
-    private void Send() {
-        if(file != null) {
-            ImageUploader.UploadFileAsync("test.png", file.getAbsolutePath());
+    private void Send() throws UnsupportedEncodingException {
+        Item i = ToItem();
+
+        if(CanSendItem(i)) {
+            String url = String.format(Settings.urlAddItem, e(i.name), e(i.regNumber), e(i.price), e(i.place), i.buyDate == null ? "" : e(i.buyDate.getTime().toString()), e(i.description));
+            Log.d(getClass().getSimpleName(), url);
+            new ServerGateway(url, new ServerListener() {
+                @Override
+                public void OnServerResult(String result) {
+                    Toast.makeText(InventoryActivity.this, "predmet ulozen", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void OnServerOK(JsonElement json) { }
+
+                @Override
+                public void OnServerError(String error) {
+                    Toast.makeText(InventoryActivity.this, error, Toast.LENGTH_SHORT).show();
+                }
+            }).execute();
+            if(file != null) {
+                ImageUploader.UploadFileAsync("test.png", file.getAbsolutePath(), i.regNumber);
+            } else {
+                Toast.makeText(this, "posilam bez fotky", Toast.LENGTH_SHORT).show();
+            }
         } else {
-            Toast.makeText(this, "file is null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "vypln nazev a registracni cislo", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String e(String parameter) throws UnsupportedEncodingException {
+        return URLEncoder.encode(parameter, "UTF-8");
+    }
+
+    private Item ToItem() {
+        Item item = new Item();
+        item.name = tName.getText().toString();
+        item.regNumber = tRegNumber.getText().toString();
+        item.price = tPrice.getText().toString();
+        item.place = tPlace.getText().toString();
+        item.description = tDesc.getText().toString();
+        return item;
+    }
+
+    private boolean CanSendItem(Item i) {
+        return !(i.name.isEmpty() || i.regNumber.isEmpty());
     }
 }

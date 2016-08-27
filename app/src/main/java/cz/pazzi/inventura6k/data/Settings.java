@@ -9,5 +9,6 @@ public class Settings {
     public static String urlPhotoUpload = urlServerApi + "photoUploader.php";
     public static String urlNextRegNumber = urlServerApi + "items.php?action=nextRegNumber";
     public static String urlGetItems = urlServerApi + "items.php?action=get";
+    public static String urlAddItem = urlServerApi + "items.php?action=add&itemName=%s&itemRegNumber=%s&itemPrice=%s&itemPlace=%s&itemBuyDate=%s&itemDescription=%s";
 
 }
