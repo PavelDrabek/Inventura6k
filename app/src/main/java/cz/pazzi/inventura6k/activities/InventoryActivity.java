@@ -19,7 +19,12 @@ import android.widget.Toast;
 
 import com.google.gson.JsonElement;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
@@ -40,13 +45,19 @@ public class InventoryActivity extends AppCompatActivity {
     ImageView imgPhoto;
     Button btnSend;
 
-    File file = null;
-    String fileName = null;
+    String fileAbsolutePath = null;
+    boolean hasPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
+
+        setTitle("Nový předmět");
+
+        hasPhoto = false;
+        fileAbsolutePath = Environment.getExternalStorageDirectory() + "/photo.png";
+
 
         tName = (EditText)findViewById(R.id.tName);
         tRegNumber = (EditText)findViewById(R.id.tRegNumber);
@@ -121,17 +132,16 @@ public class InventoryActivity extends AppCompatActivity {
     }
 
     private void GetFile() {
-        if(file == null) {
-            file = new File(Environment.getExternalStorageDirectory(), "photo.png");
-            fileName = String.valueOf(file);
-        }
+//        if(fileAbsolutePath == null) {
+//            fileAbsolutePath = Environment.getExternalStorageDirectory() + "/photo.png";
+//        }
 
 //        Intent intent = new Intent();
 //        intent.putExtra( MediaStore.EXTRA_OUTPUT, Uri.fromFile( file ) );
 //        startActivityForResult( intent, REQUEST_TAKE_PHOTO );
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileAbsolutePath)));
         startActivityForResult(intent, REQUEST_TAKE_PHOTO);
     }
 
@@ -143,8 +153,16 @@ public class InventoryActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "result ok", Toast.LENGTH_SHORT).show();
 
-                Bitmap b = BitmapFactory.decodeFile( file.getAbsolutePath() );
-                imgPhoto.setImageBitmap( Bitmap.createScaledBitmap(b, b.getWidth()/10, b.getHeight()/10, true));
+                try {
+                    ShrinkImage(fileAbsolutePath, 1024, 1024);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Bitmap b = BitmapFactory.decodeFile(fileAbsolutePath);
+                imgPhoto.setImageBitmap(b); //Bitmap.createScaledBitmap(b, b.getWidth()/10, b.getHeight()/10, true));
+
+                hasPhoto = true;
 
             } else {
                 Toast.makeText(this, "result not ok", Toast.LENGTH_SHORT).show();
@@ -158,7 +176,7 @@ public class InventoryActivity extends AppCompatActivity {
     }
 
     private void Send() throws UnsupportedEncodingException {
-        Item i = ToItem();
+        final Item i = ToItem();
 
         if(CanSendItem(i)) {
             String url = String.format(Settings.urlAddItem, e(i.name), e(i.regNumber), e(i.price), e(i.place), i.buyDate == null ? "" : e(i.buyDate.getTime().toString()), e(i.description));
@@ -167,6 +185,11 @@ public class InventoryActivity extends AppCompatActivity {
                 @Override
                 public void OnServerResult(String result) {
                     Toast.makeText(InventoryActivity.this, "predmet ulozen", Toast.LENGTH_SHORT).show();
+                    if(hasPhoto) {
+                        ImageUploader.UploadFileAsync("test.png", fileAbsolutePath, i.regNumber);
+                    } else {
+                        Toast.makeText(InventoryActivity.this, "poslano bez fotky", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
@@ -177,11 +200,7 @@ public class InventoryActivity extends AppCompatActivity {
                     Toast.makeText(InventoryActivity.this, error, Toast.LENGTH_SHORT).show();
                 }
             }).execute();
-            if(file != null) {
-                ImageUploader.UploadFileAsync("test.png", file.getAbsolutePath(), i.regNumber);
-            } else {
-                Toast.makeText(this, "posilam bez fotky", Toast.LENGTH_SHORT).show();
-            }
+
         } else {
             Toast.makeText(this, "vypln nazev a registracni cislo", Toast.LENGTH_SHORT).show();
         }
@@ -203,5 +222,17 @@ public class InventoryActivity extends AppCompatActivity {
 
     private boolean CanSendItem(Item i) {
         return !(i.name.isEmpty() || i.regNumber.isEmpty());
+    }
+
+    private static void ShrinkImage(String absolutePath, int maxWidth, int maxHeight) throws IOException {
+        Bitmap b = BitmapFactory.decodeFile(absolutePath);
+        float scale = (float)Math.sqrt((float)(maxWidth * maxHeight) / (float)(b.getWidth() * b.getHeight()));
+
+        Bitmap scaled = Bitmap.createScaledBitmap(b, (int)(b.getWidth() * scale), (int)(b.getHeight() * scale), true);
+
+        File file = new File(absolutePath);
+        OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+        scaled.compress(Bitmap.CompressFormat.JPEG, 100, os);
+        os.close();
     }
 }
