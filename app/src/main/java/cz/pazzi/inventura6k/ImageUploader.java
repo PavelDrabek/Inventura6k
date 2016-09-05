@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+import cz.pazzi.inventura6k.data.Settings;
+
 /**
  * Created by pavel on 08.08.16.
  * http://stackoverflow.com/questions/23648028/upload-image-to-server-with-multiple-parameters/23648537#23648537
@@ -24,7 +26,7 @@ public class ImageUploader {
 
     static String serverUrl = "http://6k.pazzi.cz/api/photoUploader.php";
 
-    public static void UploadFileAsync(final String fileName, final String absolutePath) {
+    public static void UploadFileAsync(final String fileName, final String absolutePath, final String regNumber) {
         new Thread(new Runnable() {
             public void run() {
 
@@ -32,7 +34,7 @@ public class ImageUploader {
 //                UploadFile(serverUrl, fileName, absolutePath);
                 try {
 
-                    MultipartUtility multipart = new MultipartUtility(serverUrl, "UTF-8");
+                    MultipartUtility multipart = new MultipartUtility(Settings.urlPhotoUpload + "?regNumber="+regNumber, "UTF-8");
 
                     //add your file here.
                     /*This is to add file content*/

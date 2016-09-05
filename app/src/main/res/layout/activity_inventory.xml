@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="cz.pazzi.inventura6k.InventoryActivity">
-
+    tools:context=".activities.InventoryActivity">
 
     <EditText
         android:layout_width="fill_parent"
@@ -15,7 +14,6 @@
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/imgPhoto"
-        android:editable="true"
         android:singleLine="true" />
 
     <EditText
@@ -25,18 +23,19 @@
         android:layout_below="@+id/textView2"
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/imgPhoto"
-        android:editable="true"
         android:singleLine="true" />
 
     <ImageView
         android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_height="match_parent"
         android:id="@+id/imgPhoto"
         android:src="@android:drawable/ic_menu_camera"
         android:layout_alignTop="@+id/textView2"
         android:layout_alignParentEnd="true"
         android:layout_marginLeft="5dp"
-        android:layout_alignBottom="@+id/tPlace" />
+        android:layout_alignBottom="@+id/tPlace"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp" />
 
     <TextView
         android:layout_width="wrap_content"

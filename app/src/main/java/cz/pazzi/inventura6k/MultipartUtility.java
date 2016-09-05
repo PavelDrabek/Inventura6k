@@ -1,5 +1,8 @@
 package cz.pazzi.inventura6k;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,6 +82,8 @@ public class MultipartUtility {
         writer.append(LINE_FEED);
         writer.flush();
 
+
+
         FileInputStream inputStream = new FileInputStream(uploadFile);
         byte[] buffer = new byte[4096];
         int bytesRead = -1;
@@ -130,4 +135,5 @@ public class MultipartUtility {
         }
         return response;
     }
+
 }
